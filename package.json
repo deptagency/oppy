@@ -1,0 +1,38 @@
+{
+  "name": "@deptagency/oppy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "description": "Slack Bot for Personio daily absences",
+  "files": [
+    "index.js"
+  ],
+  "bin": {
+    "oppy": "./index.js"
+  },
+  "preferGlobal": true,
+  "dependencies": {
+    "got": "^9.6.0",
+    "mri": "^1.1.4",
+    "node-ical": "^0.9.0"
+  },
+  "keywords": [
+    "opportunity",
+    "absences",
+    "personio",
+    "slack"
+  ],
+  "repository": "deptagency/oppy",
+  "author": "Dept Design & Technology GmbH",
+  "scripts": {
+    "test": "eslint ."
+  },
+  "devDependencies": {
+    "eslint": "^5.13.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-security": "^1.4.0"
+  },
+  "engines": {
+    "node": ">=8.10.0"
+  }
+}
