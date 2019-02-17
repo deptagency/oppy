@@ -18,7 +18,7 @@ if (! argv['personio-ics'] || ! argv['slack-webhook']) {
 // Cache init
 const cache = new CachemanFile({tmpDir: './cache'});
 const cacheKey = new Date().toISOString().split('T')[0];
-const cacheTTL = 60 * 60 * 10;
+const cacheTTL = 60 * 60 * 24;
 
 // Absences pool
 let absences = [];
@@ -54,23 +54,25 @@ ical.fromURL(argv['personio-ics'], {}, (error, data) => {
     cache.get(cacheKey, async (error, value) => {
 
         if (error) {
-            console.log('Caching error');
+            console.log('Cacheman error');
 
-            return;
+            process.exit(1);
         }
 
         const diff = difference(absences, value);
 
+        if (! diff.length) {
+            return;
+        }
+
         await cache.set(cacheKey, absences, cacheTTL);
 
-        if (diff.length) {
-            got(argv['slack-webhook'], {
-                method: 'POST',
-                body: JSON.stringify({
-                    'text': 'Today absent:\n`' + diff.join('`\n`') + '`'
-                })
-            });
-        }
+        got(argv['slack-webhook'], {
+            method: 'POST',
+            body: JSON.stringify({
+                'text': 'Today absent:\n`' + diff.join('`\n`') + '`'
+            })
+        });
 
     })
 
