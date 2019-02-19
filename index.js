@@ -3,7 +3,10 @@
 
 // Required packages
 const got = require('got');
+const util = require('util');
 const ical = require('node-ical');
+const DateDiff = require('date-diff');
+const pluralize = require('pluralize');
 const CachemanFile = require('cacheman-file');
 const difference = require('lodash.difference');
 const argv = require('mri')(process.argv.slice(2));
@@ -15,9 +18,13 @@ if (! argv['personio-ics'] || ! argv['slack-webhook']) {
     process.exit(1);
 }
 
+// Today values
+const todayKey = new Date().toISOString().split('T')[0];
+const todayDate = Date.parse(todayKey);
+
 // Cache init
 const cache = new CachemanFile({tmpDir: './cache'});
-const cacheKey = new Date().toISOString().split('T')[0];
+const cacheKey = todayKey;
 const cacheTTL = 60 * 60 * 24;
 
 // Absences pool
@@ -37,10 +44,25 @@ ical.fromURL(argv['personio-ics'], {}, (error, data) => {
     Object.values(data).map(event => {
         const eventStart = Date.parse(event.start);
         const eventEnd = Date.parse(event.end);
-        const today = Date.now();
-        const diff = today <= eventEnd && today >= eventStart;
+        const diffTime = todayDate <= eventEnd && todayDate >= eventStart;
 
-        diff && absences.push(event.summary);
+        if (! diffTime) {
+            return;
+        }
+
+        const diffDays = Math.ceil((new DateDiff(eventEnd, todayDate)).days());
+
+        if (diffDays > 31) {
+            return;
+        }
+
+        absences.push(
+            util.format(
+                '>%s _(%s)_',
+                event.summary,
+                pluralize('day', diffDays, true)
+            )
+        );
     });
 
     // Exit if empty
@@ -51,7 +73,7 @@ ical.fromURL(argv['personio-ics'], {}, (error, data) => {
     }
 
     // Sync cache
-    cache.get(cacheKey, async (error, value) => {
+    cache.get(cacheKey, (error, value) => {
 
         if (error) {
             console.log('Cacheman error');
@@ -59,21 +81,22 @@ ical.fromURL(argv['personio-ics'], {}, (error, data) => {
             process.exit(1);
         }
 
-        const diff = difference(absences, value);
+        const diffAbsences = difference(absences, value);
 
-        if (! diff.length) {
+        if (! diffAbsences.length) {
             return;
         }
 
-        await cache.set(cacheKey, absences, cacheTTL);
+        cache.set(cacheKey, absences, cacheTTL, () => {
 
-        got(argv['slack-webhook'], {
-            method: 'POST',
-            body: JSON.stringify({
-                'text': 'Today absent:\n`' + diff.join('`\n`') + '`'
-            })
+            got(argv['slack-webhook'], {
+                method: 'POST',
+                body: JSON.stringify({
+                    'text': 'Today absent:\n' + diffAbsences.sort().join('\n')
+                })
+            });
+
         });
-
     })
 
 });

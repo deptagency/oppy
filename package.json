@@ -1,6 +1,6 @@
 {
   "name": "@deptagency/oppy",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "main": "index.js",
   "license": "MIT",
   "description": "Slack Bot for Personio daily absences",
@@ -13,10 +13,12 @@
   "preferGlobal": true,
   "dependencies": {
     "cacheman-file": "^0.2.1",
+    "date-diff": "^0.2.1",
     "got": "^9.6.0",
     "lodash.difference": "^4.5.0",
     "mri": "^1.1.4",
-    "node-ical": "^0.9.0"
+    "node-ical": "^0.9.0",
+    "pluralize": "^7.0.0"
   },
   "keywords": [
     "opportunity",
