@@ -1,6 +1,11 @@
 # oppy / CHANGELOG
 
 
+### 1.2.1 (2019-02-22)
+
+* Refactor Slack API call
+
+
 ### 1.2.0 (2019-02-19)
 
 * Feature: Absences duration
