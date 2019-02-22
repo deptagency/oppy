@@ -58,7 +58,7 @@ ical.fromURL(argv['personio-ics'], {}, (error, data) => {
 
         absences.push(
             util.format(
-                '>%s _(%s)_',
+                '%s _(%s)_',
                 event.summary,
                 pluralize('day', diffDays, true)
             )
@@ -92,7 +92,9 @@ ical.fromURL(argv['personio-ics'], {}, (error, data) => {
             got(argv['slack-webhook'], {
                 method: 'POST',
                 body: JSON.stringify({
-                    'text': 'Today absent:\n' + diffAbsences.sort().join('\n')
+                    'attachments': [{
+                        'text': diffAbsences.sort().join('\n')
+                    }]
                 })
             });
 
