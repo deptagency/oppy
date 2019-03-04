@@ -1,9 +1,15 @@
 # oppy / CHANGELOG
 
 
+### 1.2.2 (2019-03-04)
+
+* Update: Slack API message design
+* Update: Node packages
+
+
 ### 1.2.1 (2019-02-22)
 
-* Refactor Slack API call
+* Update: Refactor Slack API request
 
 
 ### 1.2.0 (2019-02-19)
