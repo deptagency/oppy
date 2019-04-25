@@ -1,6 +1,13 @@
 # oppy / CHANGELOG
 
 
+### 1.3.0 (2019-04-25)
+
+* Remove: Absence duration
+* Remove: Absence prefix
+* Update: Eslint version
+
+
 ### 1.2.2 (2019-03-04)
 
 * Update: Slack API message design

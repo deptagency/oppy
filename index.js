@@ -3,10 +3,8 @@
 
 // Required packages
 const got = require('got');
-const util = require('util');
 const ical = require('node-ical');
 const DateDiff = require('date-diff');
-const pluralize = require('pluralize');
 const CachemanFile = require('cacheman-file');
 const difference = require('lodash.difference');
 const argv = require('mri')(process.argv.slice(2));
@@ -56,13 +54,9 @@ ical.fromURL(argv['personio-ics'], {}, (error, data) => {
             return;
         }
 
-        absences.push(
-            util.format(
-                '>%s _(%s)_',
-                event.summary,
-                pluralize('day', diffDays, true)
-            )
-        );
+        const absentPerson = event.summary.replace(/^\[.+\]\s/, '');
+
+        absences.push(`>${absentPerson}`);
     });
 
     // Exit if empty
